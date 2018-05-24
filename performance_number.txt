@@ -1,0 +1,79 @@
+Performance number for mix_queries.js
+Run 1
+real	0m7.923s
+user	0m4.459s
+sys	0m0.461s
+
+Run 2
+real	0m7.910s
+user	0m4.446s
+sys	0m0.460s
+ 
+Run 3
+real	0m8.218s
+user	0m4.576s
+sys	0m0.482s
+
+
+
+After creating the indexes
+Run 1
+real	0m8.072s
+user	0m4.491s
+sys		0m0.473s
+
+Run 2
+real	0m8.014s
+user	0m4.481s
+sys		0m0.467s
+
+Run 3
+real	0m8.062s
+user	0m4.495s
+sys		0m0.468s
+
+
+Average for mix_queries real:
+Before indexes: 8.017s
+After indexes: 8.049s
+
+
+
+
+
+
+
+---------
+Analysis for aggregate.js before index
+real	0m6.272s
+user	0m2.110s
+sys	0m0.439s
+
+real	0m6.166s
+user	0m2.082s
+sys	0m0.431s
+
+real	0m6.202s
+user	0m2.095s
+sys	0m0.428s
+
+
+Average = Real : 6.213 s
+
+
+Analysis after creating indexes in designation and salary
+
+real	0m6.019s
+user	0m2.076s
+sys		0m0.432s
+
+real	0m6.063s
+user	0m2.121s
+sys		0m0.429s
+
+real	0m6.042s
+user	0m2.117s
+sys		0m0.431s
+
+Average: 6.041
+ 

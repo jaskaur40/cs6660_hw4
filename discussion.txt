@@ -6,6 +6,7 @@ During my analysis I performed various queries over different sizes of datasets.
 4. Composite indexes works better in terms of performance than mere indexes on each column.
 5. One of the recommended ways to increase the performance is by having separate database connection object for different type of operations. For example a separate db object for fast read operations, another client for update/insert operations, another client of report generation. Mongodb considers each object as a separate database client and will not delay the processing of others. [Source: www.sitepoint.com/7-simple-speed-solutions-mongodb/]
 6. The insert operations take a slightly longer duration when running on non-indexed databases. The difference on 100K database is less than 2%. On further reading through the mongo db notes, found this theory to be correct. But they also recommend that the overhead while insertion in indexed table is generally far less detrimental than running a read query on a non-indexed table. [Source: docs.mongodb.com: Write Performance Optimization
+7. With indexes the aggregate.js run time has decreased since mongo relies heavily on these indexes now to find the required documents.
 
 While running a single find query with .explain(true), found that in the executionStages:COLLSCAN was used for non-indexed table. For partial index IXSCAN was used.
 
