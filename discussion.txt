@@ -1,0 +1,70 @@
+During my analysis I performed various queries over different sizes of datasets. Following are the observations I made:
+
+1. The performance of the query between indexed and non-indexed databases is not significant when the size of data is small.
+2. When the size of db increases significantly, the performance is majorly impacted by the indexes. For example, when I ran the mix_queries.js over the dataset of 100K records, there was a significant difference in the performance. Without any indexes it took an average of <<<<AVG FOR FILE in ms>>>  to complete the run, while with the indexes it took mix_queries.js for the run.  The reason for slight increase in the number is due to fact that for every update query mongo needs to update the indexes. The script is written in a way that there are same number of update and find queries
+3. Also, the indexes become more significant during sort operations. When going over a sorting operation with 1M records, I found that in first run there was a empty response rather than any error message. On digging deeper found that mongo imposes 32MB memory limit. So it can just return an empty response rather than an error. Source: https://www.sitepoint.com/7-simple-speed-solutions-mongodb/ 
+4. Composite indexes works better in terms of performance than mere indexes on each column.
+5. One of the recommended ways to increase the performance is by having separate database connection object for different type of operations. For example a separate db object for fast read operations, another client for update/insert operations, another client of report generation. Mongodb considers each object as a separate database client and will not delay the processing of others. [Source: www.sitepoint.com/7-simple-speed-solutions-mongodb/]
+6. The insert operations take a slightly longer duration when running on non-indexed databases. The difference on 100K database is less than 2%. On further reading through the mongo db notes, found this theory to be correct. But they also recommend that the overhead while insertion in indexed table is generally far less detrimental than running a read query on a non-indexed table. [Source: docs.mongodb.com: Write Performance Optimization
+
+While running a single find query with .explain(true), found that in the executionStages:COLLSCAN was used for non-indexed table. For partial index IXSCAN was used.
+
+> db.Department.find({name:"Engineering"}).explain(true)
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "test.Department",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			"name" : {
+				"$eq" : "Engineering"
+			}
+		},
+		"winningPlan" : {
+			"stage" : "COLLSCAN",
+			"filter" : {
+				"name" : {
+					"$eq" : "Engineering"
+				}
+			},
+			"direction" : "forward"
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 2,
+		"executionTimeMillis" : 1,
+		"totalKeysExamined" : 0,
+		"totalDocsExamined" : 12,
+		"executionStages" : {
+			"stage" : "COLLSCAN",
+			"filter" : {
+				"name" : {
+					"$eq" : "Engineering"
+				}
+			},
+			"nReturned" : 2,
+			"executionTimeMillisEstimate" : 0,
+			"works" : 14,
+			"advanced" : 2,
+			"needTime" : 11,
+			"needYield" : 0,
+			"saveState" : 0,
+			"restoreState" : 0,
+			"isEOF" : 1,
+			"invalidates" : 0,
+			"direction" : "forward",
+			"docsExamined" : 12
+		},
+		"allPlansExecution" : [ ]
+	},
+	"serverInfo" : {
+		"host" : “jkaur.internal.com",
+		"port" : 27017,
+		"version" : "3.6.4",
+		"gitVersion" : "d0181a711f7e7f39e60b5aeb1dc7097bf6ae5856"
+	},
+	"ok" : 1
+}
+
